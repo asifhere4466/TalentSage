@@ -6,10 +6,6 @@ import { AIAssistant } from "@/components/ai-assistant/ai-assistant";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-});
 
 export const metadata: Metadata = {
   title: "TalentSage | AI-Native Recruitment Operating System",

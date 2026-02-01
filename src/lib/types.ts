@@ -119,6 +119,7 @@ export interface Job {
   department: string;
   location: string;
   type: "full-time" | "part-time" | "contract" | "remote";
+  level: "junior" | "mid" | "senior" | "lead";
   status: "open" | "closed" | "paused";
   postedDate: string;
   description: string;

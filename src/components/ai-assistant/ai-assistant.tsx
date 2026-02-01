@@ -21,7 +21,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { AssistantAction, ChatMessage } from "@/lib/types";
+import type { AssistantAction } from "@/lib/types";
 import { AssistantAvatar } from "./assistant-avatar";
 
 interface SpeechRecognitionEvent extends Event {

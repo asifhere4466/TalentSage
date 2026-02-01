@@ -24,7 +24,6 @@ import {
   Clock,
   MessageSquare,
   CheckCircle,
-  AlertCircle,
   Sparkles,
   Download,
   Share2,
@@ -52,7 +51,6 @@ export default function VideoScreeningPage() {
     null,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
