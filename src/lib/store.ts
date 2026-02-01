@@ -27,6 +27,11 @@ interface AppState {
   }[];
   selectedJobId: string | null;
   setSelectedJob: (jobId: string | null) => void;
+  addJob: (
+    job: Omit<Job, "id" | "postedDate" | "candidateCount" | "rubric">,
+  ) => string;
+  updateJob: (jobId: string, updates: Partial<Job>) => void;
+  deleteJob: (jobId: string) => void;
   updateJobRubric: (jobId: string, rubric: RubricCriteria[]) => void;
   updateRubric: (
     rubricId: string,
@@ -150,6 +155,46 @@ export const useAppStore = create<AppState>()(
 
       // Job Actions
       setSelectedJob: (jobId) => set({ selectedJobId: jobId }),
+
+      addJob: (jobData) => {
+        const jobId = generateId();
+        const newJob: Job = {
+          id: jobId,
+          ...jobData,
+          postedDate: new Date().toISOString(),
+          candidateCount: 0,
+          rubric: [],
+        };
+
+        set((state) => ({
+          jobs: [newJob, ...state.jobs],
+          rubrics: [
+            {
+              id: `rub_${jobId}`,
+              jobId: jobId,
+              name: `${newJob.title} Rubric`,
+              criteria: [],
+            },
+            ...state.rubrics,
+          ],
+        }));
+
+        return jobId;
+      },
+
+      updateJob: (jobId, updates) =>
+        set((state) => ({
+          jobs: state.jobs.map((job) =>
+            job.id === jobId ? { ...job, ...updates } : job,
+          ),
+        })),
+
+      deleteJob: (jobId) =>
+        set((state) => ({
+          jobs: state.jobs.filter((job) => job.id !== jobId),
+          rubrics: state.rubrics.filter((r) => r.jobId !== jobId),
+          candidates: state.candidates.filter((c) => c.jobId !== jobId),
+        })),
 
       updateJobRubric: (jobId, rubric) =>
         set((state) => ({

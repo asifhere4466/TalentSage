@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useAppStore } from "@/lib/store";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,9 +20,9 @@ import {
   Users,
   Calendar,
   Search,
-  Plus,
   DollarSign,
 } from "lucide-react";
+import { CreateJobModal } from "@/components/dashboard/create-job-modal";
 
 export default function JobsPage() {
   const { jobs } = useAppStore();
@@ -55,10 +54,7 @@ export default function JobsPage() {
             Manage your job postings and view candidate pipelines
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Job
-        </Button>
+        <CreateJobModal />
       </div>
 
       {/* Filters */}

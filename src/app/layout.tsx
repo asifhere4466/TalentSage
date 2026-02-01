@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description:
     "TalentSage is the AI-native recruitment operating system that reduces time-to-hire by 60% with intelligent candidate matching, automated screening, and predictive analytics.",
   keywords: ["recruitment", "AI", "hiring", "HR", "talent acquisition", "ATS"],
-  authors: [{ name: "Vision Tact LLC" }],
+  authors: [{ name: "Muhammad Asif" }],
   openGraph: {
     title: "TalentSage | AI-Native Recruitment Operating System",
     description: "Reduce time-to-hire by 60% with AI-powered recruitment",
