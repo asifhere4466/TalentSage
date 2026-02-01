@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useAppStore } from "@/lib/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -27,7 +26,9 @@ export default function SettingsPage() {
             </div>
             <Switch
               checked={settings.voiceEnabledDefault}
-              onCheckedChange={(v) => setVoiceEnabledDefault(Boolean(v))}
+              onCheckedChange={(v: boolean) =>
+                setVoiceEnabledDefault(Boolean(v))
+              }
             />
           </div>
 
@@ -41,7 +42,9 @@ export default function SettingsPage() {
             </div>
             <Switch
               checked={settings.prefersReducedMotion}
-              onCheckedChange={(v) => setPrefersReducedMotion(Boolean(v))}
+              onCheckedChange={(v: boolean) =>
+                setPrefersReducedMotion(Boolean(v))
+              }
             />
           </div>
         </CardContent>

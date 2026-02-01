@@ -1,6 +1,27 @@
 // Core Types for TalentSage
 
-export type CandidateStage = 'applied' | 'shortlisted' | 'interview' | 'rejected' | 'hired';
+export type CandidateStage =
+  | "new"
+  | "applied"
+  | "screening"
+  | "shortlisted"
+  | "interview"
+  | "offer"
+  | "hired"
+  | "rejected";
+
+export interface ExperienceEntry {
+  role: string;
+  company: string;
+  duration?: string;
+  description?: string;
+}
+
+export interface EducationEntry {
+  degree: string;
+  school: string;
+  year?: string;
+}
 
 export interface Candidate {
   id: string;
@@ -9,17 +30,29 @@ export interface Candidate {
   phone: string;
   avatar?: string;
   position: string;
+  currentRole?: string;
+  currentCompany?: string;
   jobId: string;
   stage: CandidateStage;
   appliedDate: string;
   score: number;
+  aiScore?: number; // optional alias used by some UI components
   skills: string[];
-  experience: string;
-  education: string;
+  // Support either a simple string (legacy mock data) or a structured array used by the UI
+  experience: string | ExperienceEntry[];
+  education: string | EducationEntry[];
   resumeText: string;
   location: string;
   aiEvaluation?: AIEvaluation;
+  aiSummary?: string; // optional short summary used in UI
+  scores?: Record<string, number>;
+  linkedIn?: string;
+  github?: string;
+  resumeUrl?: string;
+  isShortlisted?: boolean;
+  interviewScheduled?: string | null;
   videoScreening?: VideoScreening;
+  certifications?: string[];
   auditLog: AuditEvent[];
 }
 
@@ -28,7 +61,7 @@ export interface AIEvaluation {
   skillsMatch: number;
   experienceMatch: number;
   cultureFit: number;
-  recommendation: 'strong_yes' | 'yes' | 'maybe' | 'no';
+  recommendation: "strong_yes" | "yes" | "maybe" | "no";
   summary: string;
   strengths: string[];
   concerns: string[];
@@ -41,12 +74,23 @@ export interface VideoScreening {
   duration: number;
   submittedAt: string;
   transcript?: string;
+  // Short textual analysis sometimes displayed in the UI
+  aiAnalysis?: string;
+  // Legacy/optional top-level scores (UI may read from aiSummary instead)
+  communicationScore?: number;
+  confidenceScore?: number;
   aiSummary?: VideoAISummary;
   recruiterDecision?: {
-    decision: 'pass' | 'hold' | 'reject';
+    decision: "pass" | "hold" | "reject";
     notes: string;
     decidedAt: string;
   };
+  // Additional optional fields used by UI and tests
+  candidateId?: string;
+  questions?: Array<{ question: string; timestamp?: number }>;
+  technicalScore?: number;
+  highlights?: string[];
+  status?: "pending_review" | "reviewed" | "submitted" | string;
 }
 
 export interface VideoAISummary {
@@ -66,6 +110,7 @@ export interface RubricCriteria {
   description: string;
   weight: number;
   maxScore: number;
+  scoreDescriptions?: Record<number, string>;
 }
 
 export interface Job {
@@ -73,8 +118,8 @@ export interface Job {
   title: string;
   department: string;
   location: string;
-  type: 'full-time' | 'part-time' | 'contract' | 'remote';
-  status: 'open' | 'closed' | 'paused';
+  type: "full-time" | "part-time" | "contract" | "remote";
+  status: "open" | "closed" | "paused";
   postedDate: string;
   description: string;
   requirements: string[];
@@ -90,7 +135,14 @@ export interface Job {
 
 export interface AuditEvent {
   id: string;
-  type: 'stage_change' | 'rubric_update' | 'screening_submitted' | 'screening_reviewed' | 'interview_scheduled' | 'note_added' | 'ai_evaluation';
+  type:
+    | "stage_change"
+    | "rubric_update"
+    | "screening_submitted"
+    | "screening_reviewed"
+    | "interview_scheduled"
+    | "note_added"
+    | "ai_evaluation";
   description: string;
   timestamp: string;
   actor: string;
@@ -103,17 +155,18 @@ export interface ScheduledInterview {
   jobId: string;
   scheduledAt: string;
   duration: number;
-  type: 'phone' | 'video' | 'onsite';
+  type: "phone" | "video" | "onsite" | "panel";
   interviewers: string[];
   notes?: string;
+  status?: string;
 }
 
 // AI Assistant Types
-export type AssistantState = 'idle' | 'listening' | 'thinking' | 'speaking';
+export type AssistantState = "idle" | "listening" | "thinking" | "speaking";
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: string;
   actions?: AssistantAction[];
@@ -121,7 +174,12 @@ export interface ChatMessage {
 
 export interface AssistantAction {
   id: string;
-  type: 'shortlist' | 'generate_rubric' | 'schedule_interview' | 'view_candidate' | 'view_job';
+  type:
+    | "shortlist"
+    | "generate_rubric"
+    | "schedule_interview"
+    | "view_candidate"
+    | "view_job";
   label: string;
   payload?: Record<string, unknown>;
   executed?: boolean;

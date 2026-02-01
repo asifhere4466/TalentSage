@@ -12,12 +12,18 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
+    "jsxImportSource": "react",
+    "types": [
+      "react",
+      "node",
+      "jest"
+    ],
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -25,10 +31,10 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     /* Path mapping */
-    "baseUrl": ".",
+    "baseUrl": "src",
     "paths": {
       "@/*": [
-        "src/*"
+        "*"
       ]
     },
     "allowJs": true,
@@ -43,11 +49,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
   ],
   "exclude": [
     "node_modules"

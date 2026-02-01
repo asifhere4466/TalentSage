@@ -1,6 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
 import { useAppStore } from "@/lib/store";
-import type { AssistantAction } from "@/lib/types";
 
 describe("App Store - AI Assistant Actions", () => {
   beforeEach(() => {
@@ -16,11 +15,6 @@ describe("App Store - AI Assistant Actions", () => {
   it("should shortlist top candidates for a job", () => {
     const { result } = renderHook(() => useAppStore());
     const jobId = "job-1";
-
-    // Get initial applied candidates
-    const initialAppliedCandidates = result.current
-      .getCandidatesForJob(jobId)
-      .filter((c) => c.stage === "applied");
 
     act(() => {
       result.current.shortlistTopCandidates(jobId);

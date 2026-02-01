@@ -19,13 +19,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Plus,
   Trash2,
   Edit,
@@ -45,12 +38,11 @@ interface RubricEditorProps {
 
 export function RubricEditor({ jobId }: RubricEditorProps) {
   const { rubrics, jobs, updateRubric, generateRubric } = useStore();
-  const job = jobs.find((j) => j.id === jobId);
   const rubric = rubrics.find((r) => r.jobId === jobId);
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [editingCriteria, setEditingCriteria] = useState<RubricCriteria | null>(
-    null
+    null,
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [expandedCriteria, setExpandedCriteria] = useState<string | null>(null);
@@ -85,6 +77,7 @@ export function RubricEditor({ jobId }: RubricEditorProps) {
       name: newCriteria.name,
       description: newCriteria.description || "",
       weight: newCriteria.weight || 20,
+      maxScore: 5,
       scoreDescriptions: newCriteria.scoreDescriptions || {
         1: "Does not meet requirements",
         2: "Partially meets requirements",
@@ -118,7 +111,7 @@ export function RubricEditor({ jobId }: RubricEditorProps) {
     if (!rubric || !editingCriteria) return;
 
     const updatedCriteria = rubric.criteria.map((c) =>
-      c.id === editingCriteria.id ? editingCriteria : c
+      c.id === editingCriteria.id ? editingCriteria : c,
     );
 
     updateRubric(rubric.id, { criteria: updatedCriteria });
@@ -138,13 +131,14 @@ export function RubricEditor({ jobId }: RubricEditorProps) {
     if (!rubric) return;
 
     const updatedCriteria = rubric.criteria.map((c) =>
-      c.id === criteriaId ? { ...c, weight: newWeight } : c
+      c.id === criteriaId ? { ...c, weight: newWeight } : c,
     );
 
     updateRubric(rubric.id, { criteria: updatedCriteria });
   };
 
-  const totalWeight = rubric?.criteria.reduce((sum, c) => sum + c.weight, 0) || 0;
+  const totalWeight =
+    rubric?.criteria.reduce((sum, c) => sum + c.weight, 0) || 0;
 
   if (!rubric) {
     return (
@@ -164,7 +158,11 @@ export function RubricEditor({ jobId }: RubricEditorProps) {
                 <>
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "linear",
+                    }}
                     className="mr-2"
                   >
                     <Sparkles className="h-4 w-4" />
@@ -264,7 +262,10 @@ export function RubricEditor({ jobId }: RubricEditorProps) {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button onClick={handleAddCriteria}>Add Criteria</Button>
@@ -305,7 +306,7 @@ export function RubricEditor({ jobId }: RubricEditorProps) {
                               setExpandedCriteria(
                                 expandedCriteria === criteria.id
                                   ? null
-                                  : criteria.id
+                                  : criteria.id,
                               )
                             }
                           >
@@ -371,21 +372,21 @@ export function RubricEditor({ jobId }: RubricEditorProps) {
                               <p className="text-xs font-medium text-muted-foreground mb-2">
                                 Score Descriptions
                               </p>
-                              {Object.entries(criteria.scoreDescriptions).map(
-                                ([score, description]) => (
-                                  <div
-                                    key={score}
-                                    className="flex items-center gap-3"
-                                  >
-                                    <div className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
-                                      {score}
-                                    </div>
-                                    <span className="text-sm text-muted-foreground">
-                                      {description}
-                                    </span>
+                              {Object.entries(
+                                criteria.scoreDescriptions ?? {},
+                              ).map(([score, description]) => (
+                                <div
+                                  key={score}
+                                  className="flex items-center gap-3"
+                                >
+                                  <div className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
+                                    {score}
                                   </div>
-                                )
-                              )}
+                                  <span className="text-sm text-muted-foreground">
+                                    {description}
+                                  </span>
+                                </div>
+                              ))}
                             </div>
                           </motion.div>
                         )}

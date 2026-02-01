@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { useAppStore } from "@/lib/store";
@@ -58,7 +57,7 @@ export default function InterviewsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Interviewer: {iv.interviewer}
+                  Interviewer(s): {iv.interviewers?.join(", ")}
                 </p>
                 {candidate && (
                   <Link

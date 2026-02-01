@@ -51,7 +51,6 @@ describe("App Store - Rubric Management", () => {
   it("should generate new rubric for a role", () => {
     const { result } = renderHook(() => useAppStore());
     const jobId = result.current.jobs[0].id;
-    const initialRubric = result.current.jobs[0].rubric;
 
     act(() => {
       result.current.generateRubric(jobId);

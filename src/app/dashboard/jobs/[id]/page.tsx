@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,12 @@ export default function JobDetailPage() {
 
   const job = jobs.find((j) => j.id === params.id);
   const jobCandidates = candidates.filter((c) => c.jobId === params.id);
-  const jobRubric = job?.rubric; // Job's rubric is stored on the job object
+
+  useEffect(() => {
+    if (job && selectedJobId !== job.id) {
+      setSelectedJob(job.id);
+    }
+  }, [job?.id, selectedJobId, setSelectedJob]);
 
   if (!job) {
     return (
@@ -55,14 +61,9 @@ export default function JobDetailPage() {
     );
   }
 
-  // Set current job when viewing
-  if (selectedJobId !== job.id) {
-    setSelectedJob(job.id);
-  }
-
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     draft: "bg-muted text-muted-foreground",
-    active: "bg-success/10 text-success",
+    open: "bg-success/10 text-success",
     paused: "bg-warning/10 text-warning-foreground",
     closed: "bg-destructive/10 text-destructive",
   };
@@ -111,7 +112,7 @@ export default function JobDetailPage() {
               </span>
               <span className="flex items-center gap-1">
                 <DollarSign className="h-4 w-4" />
-                {job.salary}
+                {`$${(job.salary.min / 1000).toFixed(0)}k - $${(job.salary.max / 1000).toFixed(0)}k`}
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />

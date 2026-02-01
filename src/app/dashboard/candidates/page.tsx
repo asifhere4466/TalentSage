@@ -32,13 +32,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Search,
-  Filter,
   Star,
   MoreHorizontal,
   Mail,
   Calendar,
   Video,
-  CheckCircle,
   XCircle,
   SlidersHorizontal,
   Download,
@@ -144,7 +142,9 @@ export default function CandidatesPage() {
 
   const stageColors: Record<CandidateStage, string> = {
     new: "bg-muted text-muted-foreground",
+    applied: "bg-muted/10 text-muted-foreground",
     screening: "bg-primary/10 text-primary",
+    shortlisted: "bg-yellow-100 text-yellow-800",
     interview: "bg-accent/10 text-accent",
     offer: "bg-warning/10 text-warning-foreground",
     hired: "bg-success/10 text-success",
@@ -364,18 +364,23 @@ export default function CandidatesPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div
-                          className={`h-2 w-2 rounded-full ${
-                            candidate.aiScore >= 80
-                              ? "bg-success"
-                              : candidate.aiScore >= 60
-                                ? "bg-warning"
-                                : "bg-destructive"
-                          }`}
-                        />
-                        <span className="font-medium">
-                          {candidate.aiScore}%
-                        </span>
+                        {(() => {
+                          const ai = candidate.aiScore ?? candidate.score;
+                          return (
+                            <>
+                              <div
+                                className={`h-2 w-2 rounded-full ${
+                                  ai >= 80
+                                    ? "bg-success"
+                                    : ai >= 60
+                                      ? "bg-warning"
+                                      : "bg-destructive"
+                                }`}
+                              />
+                              <span className="font-medium">{ai}%</span>
+                            </>
+                          );
+                        })()}
                       </div>
                     </TableCell>
                     <TableCell>

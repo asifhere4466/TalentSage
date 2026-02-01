@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppStore, useStore } from "@/lib/store";
+import { useAppStore } from "@/lib/store";
 import {
   Sheet,
   SheetContent,
@@ -27,8 +27,6 @@ import {
   Briefcase,
   GraduationCap,
   Award,
-  Clock,
-  CheckCircle,
   XCircle,
   Play,
   ArrowRight,
@@ -100,7 +98,16 @@ export function CandidateDrawer({
   const handleScheduleInterview = () => {
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
-    scheduleInterview(candidate.id, nextWeek.toISOString());
+    // scheduleInterview expects an interview object
+    scheduleInterview({
+      candidateId: candidate.id,
+      jobId: candidate.jobId,
+      scheduledAt: nextWeek.toISOString(),
+      duration: 60,
+      type: "video",
+      interviewers: [],
+      notes: "",
+    });
     toast.success(`Interview scheduled for ${candidate.name}`);
   };
 
@@ -126,7 +133,10 @@ export function CandidateDrawer({
                 )}
               </div>
               <p className="text-sm text-muted-foreground">
-                {candidate.currentRole} at {candidate.currentCompany}
+                {candidate.currentRole || candidate.position}
+                {candidate.currentCompany
+                  ? ` at ${candidate.currentCompany}`
+                  : ""}
               </p>
               <div className="flex items-center gap-2 mt-2">
                 <Badge
@@ -143,15 +153,15 @@ export function CandidateDrawer({
                 <div className="flex items-center gap-1 text-sm">
                   <div
                     className={`h-2 w-2 rounded-full ${
-                      candidate.aiScore >= 80
+                      (candidate.aiScore ?? candidate.score) >= 80
                         ? "bg-success"
-                        : candidate.aiScore >= 60
+                        : (candidate.aiScore ?? candidate.score) >= 60
                           ? "bg-warning"
                           : "bg-destructive"
                     }`}
                   />
                   <span className="font-medium">
-                    {candidate.aiScore}% match
+                    {candidate.aiScore ?? candidate.score}% match
                   </span>
                 </div>
               </div>
@@ -358,17 +368,20 @@ export function CandidateDrawer({
                 <CardTitle className="text-sm">AI Match Scores</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {Object.entries(candidate.scores).map(([key, value]) => (
-                  <div key={key}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="capitalize text-muted-foreground">
-                        {key.replace(/([A-Z])/g, " $1").trim()}
-                      </span>
-                      <span className="font-medium">{value}%</span>
+                {Object.entries(candidate.scores ?? {}).map(([key, value]) => {
+                  const v = Number(value ?? 0);
+                  return (
+                    <div key={key}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="capitalize text-muted-foreground">
+                          {key.replace(/([A-Z])/g, " $1").trim()}
+                        </span>
+                        <span className="font-medium">{v}%</span>
+                      </div>
+                      <Progress value={v} className="h-2" />
                     </div>
-                    <Progress value={value} className="h-2" />
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
 
@@ -379,7 +392,7 @@ export function CandidateDrawer({
                   <CardTitle className="text-sm">Rubric Evaluation</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {jobRubric.criteria.map((criterion) => {
+                  {jobRubric.map((criterion) => {
                     // Generate a mock score for demo
                     const mockScore = Math.floor(Math.random() * 3) + 3;
                     return (
@@ -427,25 +440,31 @@ export function CandidateDrawer({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {candidate.experience.map((exp, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="relative pl-4 border-l-2 border-muted"
-                  >
-                    <div className="absolute -left-1.5 top-0 h-3 w-3 rounded-full bg-primary" />
-                    <h4 className="font-medium text-sm">{exp.role}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {exp.company}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {exp.duration}
-                    </p>
-                    <p className="text-sm mt-1">{exp.description}</p>
-                  </motion.div>
-                ))}
+                {Array.isArray(candidate.experience) ? (
+                  candidate.experience.map((exp, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="relative pl-4 border-l-2 border-muted"
+                    >
+                      <div className="absolute -left-1.5 top-0 h-3 w-3 rounded-full bg-primary" />
+                      <h4 className="font-medium text-sm">{exp.role}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {exp.company}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {exp.duration}
+                      </p>
+                      <p className="text-sm mt-1">{exp.description}</p>
+                    </motion.div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {candidate.experience}
+                  </p>
+                )}
               </CardContent>
             </Card>
 
@@ -458,19 +477,27 @@ export function CandidateDrawer({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {candidate.education.map((edu, index) => (
-                  <div
-                    key={index}
-                    className="relative pl-4 border-l-2 border-muted"
-                  >
-                    <div className="absolute -left-1.5 top-0 h-3 w-3 rounded-full bg-accent" />
-                    <h4 className="font-medium text-sm">{edu.degree}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {edu.school}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{edu.year}</p>
-                  </div>
-                ))}
+                {Array.isArray(candidate.education) ? (
+                  candidate.education.map((edu, index) => (
+                    <div
+                      key={index}
+                      className="relative pl-4 border-l-2 border-muted"
+                    >
+                      <div className="absolute -left-1.5 top-0 h-3 w-3 rounded-full bg-accent" />
+                      <h4 className="font-medium text-sm">{edu.degree}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {edu.school}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {edu.year}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {candidate.education}
+                  </p>
+                )}
               </CardContent>
             </Card>
 
@@ -548,7 +575,9 @@ export function CandidateDrawer({
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p className="text-sm text-muted-foreground">
-                      {candidate.videoScreening.aiAnalysis}
+                      {candidate.videoScreening.aiAnalysis ??
+                        candidate.videoScreening.aiSummary?.transcript ??
+                        candidate.videoScreening.aiSummary?.recommendation}
                     </p>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -556,11 +585,22 @@ export function CandidateDrawer({
                           Communication Score
                         </p>
                         <Progress
-                          value={candidate.videoScreening.communicationScore}
+                          value={Number(
+                            candidate.videoScreening.communicationScore ??
+                              candidate.videoScreening.aiSummary
+                                ?.communicationScore ??
+                              0,
+                          )}
                           className="h-2"
                         />
                         <p className="text-xs font-medium mt-1">
-                          {candidate.videoScreening.communicationScore}%
+                          {Number(
+                            candidate.videoScreening.communicationScore ??
+                              candidate.videoScreening.aiSummary
+                                ?.communicationScore ??
+                              0,
+                          )}
+                          %
                         </p>
                       </div>
                       <div>
@@ -568,11 +608,22 @@ export function CandidateDrawer({
                           Confidence Score
                         </p>
                         <Progress
-                          value={candidate.videoScreening.confidenceScore}
+                          value={Number(
+                            candidate.videoScreening.confidenceScore ??
+                              candidate.videoScreening.aiSummary
+                                ?.confidenceScore ??
+                              0,
+                          )}
                           className="h-2"
                         />
                         <p className="text-xs font-medium mt-1">
-                          {candidate.videoScreening.confidenceScore}%
+                          {Number(
+                            candidate.videoScreening.confidenceScore ??
+                              candidate.videoScreening.aiSummary
+                                ?.confidenceScore ??
+                              0,
+                          )}
+                          %
                         </p>
                       </div>
                     </div>

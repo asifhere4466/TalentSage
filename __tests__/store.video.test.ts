@@ -43,10 +43,14 @@ describe("App Store - Video Screening & Interviews", () => {
     const candidateId = result.current.candidates[0].id;
 
     act(() => {
+      const jobId = result.current.jobs[0].id;
       result.current.scheduleInterview({
         candidateId,
+        jobId,
         scheduledAt: new Date().toISOString(),
-        interviewer: "Interviewer",
+        duration: 30,
+        type: "phone",
+        interviewers: ["Interviewer"],
       });
     });
 

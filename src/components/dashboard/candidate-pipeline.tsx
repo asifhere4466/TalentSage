@@ -17,7 +17,6 @@ import {
   MoreHorizontal,
   Star,
   Mail,
-  Phone,
   Calendar,
   Video,
   CheckCircle,
@@ -43,19 +42,25 @@ const stages: { id: CandidateStage; label: string; color: string }[] = [
 ];
 
 export function CandidatePipeline({ jobId }: CandidatePipelineProps) {
-  const { candidates, moveCandidate, shortlistCandidate, rejectCandidate } = useStore();
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const { candidates, moveCandidate, shortlistCandidate, rejectCandidate } =
+    useStore();
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(
+    null,
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const jobCandidates = candidates.filter(
-    (c) => c.jobId === jobId && c.stage !== "rejected"
+    (c) => c.jobId === jobId && c.stage !== "rejected",
   );
 
   const getCandidatesByStage = (stage: CandidateStage) => {
     return jobCandidates.filter((c) => c.stage === stage);
   };
 
-  const handleMoveCandidate = (candidateId: string, newStage: CandidateStage) => {
+  const handleMoveCandidate = (
+    candidateId: string,
+    newStage: CandidateStage,
+  ) => {
     moveCandidate(candidateId, newStage);
     const candidate = candidates.find((c) => c.id === candidateId);
     toast.success(`${candidate?.name} moved to ${newStage}`);
@@ -116,7 +121,9 @@ export function CandidatePipeline({ jobId }: CandidatePipelineProps) {
                               <div className="flex items-center gap-2">
                                 <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
                                 <Avatar className="h-10 w-10">
-                                  <AvatarImage src={candidate.avatar || "/placeholder.svg"} />
+                                  <AvatarImage
+                                    src={candidate.avatar || "/placeholder.svg"}
+                                  />
                                   <AvatarFallback>
                                     {candidate.name
                                       .split(" ")
@@ -188,12 +195,14 @@ export function CandidatePipeline({ jobId }: CandidatePipelineProps) {
                                             e.stopPropagation();
                                             const nextStageIndex =
                                               stages.findIndex(
-                                                (s) => s.id === stage.id
+                                                (s) => s.id === stage.id,
                                               ) + 1;
-                                            if (nextStageIndex < stages.length) {
+                                            if (
+                                              nextStageIndex < stages.length
+                                            ) {
                                               handleMoveCandidate(
                                                 candidate.id,
-                                                stages[nextStageIndex].id
+                                                stages[nextStageIndex].id,
                                               );
                                             }
                                           }}
@@ -216,29 +225,32 @@ export function CandidatePipeline({ jobId }: CandidatePipelineProps) {
                                   </DropdownMenu>
                                 </div>
                                 <p className="text-xs text-muted-foreground truncate">
-                                  {candidate.currentRole} at {candidate.currentCompany}
+                                  {candidate.currentRole} at{" "}
+                                  {candidate.currentCompany}
                                 </p>
                                 <div className="flex items-center gap-2 mt-2">
                                   <div className="flex items-center gap-1">
                                     <div
                                       className={`h-2 w-2 rounded-full ${
-                                        candidate.aiScore >= 80
+                                        (candidate.aiScore ??
+                                          candidate.score) >= 80
                                           ? "bg-success"
-                                          : candidate.aiScore >= 60
-                                          ? "bg-warning"
-                                          : "bg-destructive"
+                                          : (candidate.aiScore ??
+                                                candidate.score) >= 60
+                                            ? "bg-warning"
+                                            : "bg-destructive"
                                       }`}
                                     />
                                     <span className="text-xs font-medium">
-                                      {candidate.aiScore}%
+                                      {candidate.aiScore ?? candidate.score}%
                                     </span>
+                                    {candidate.isShortlisted && (
+                                      <Star className="h-3 w-3 text-warning fill-warning" />
+                                    )}
+                                    {candidate.videoScreening && (
+                                      <Video className="h-3 w-3 text-accent" />
+                                    )}
                                   </div>
-                                  {candidate.isShortlisted && (
-                                    <Star className="h-3 w-3 text-warning fill-warning" />
-                                  )}
-                                  {candidate.videoScreening && (
-                                    <Video className="h-3 w-3 text-accent" />
-                                  )}
                                 </div>
                               </div>
                             </div>

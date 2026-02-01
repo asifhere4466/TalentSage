@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "jsx": "react-jsx",
+    "types": ["node", "react"]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+}

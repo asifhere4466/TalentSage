@@ -19,10 +19,19 @@ import { mockJobs, mockCandidates, generateRubricForRole } from "./mock-data";
 interface AppState {
   // Jobs
   jobs: Job[];
+  rubrics: {
+    id: string;
+    jobId: string;
+    name: string;
+    criteria: RubricCriteria[];
+  }[];
   selectedJobId: string | null;
   setSelectedJob: (jobId: string | null) => void;
   updateJobRubric: (jobId: string, rubric: RubricCriteria[]) => void;
-
+  updateRubric: (
+    rubricId: string,
+    payload: Partial<{ criteria: RubricCriteria[]; name: string }>,
+  ) => void;
   // Candidates
   candidates: Candidate[];
   selectedCandidateId: string | null;
@@ -50,6 +59,7 @@ interface AppState {
   scheduledInterviews: ScheduledInterview[];
   scheduleInterview: (interview: Omit<ScheduledInterview, "id">) => void;
   addInterview: (interview: ScheduledInterview) => void;
+  cancelInterview: (interviewId: string) => void;
 
   // UI Actions for candidates
   moveCandidate: (candidateId: string, newStage: CandidateStage) => void;
@@ -96,6 +106,12 @@ export const useAppStore = create<AppState>()(
     (set, get) => ({
       // Initial State
       jobs: mockJobs,
+      rubrics: mockJobs.map((j) => ({
+        id: `rub_${j.id}`,
+        jobId: j.id,
+        name: `${j.title} Rubric`,
+        criteria: j.rubric,
+      })),
       selectedJobId: null,
       candidates: mockCandidates,
       selectedCandidateId: null,
@@ -112,16 +128,25 @@ export const useAppStore = create<AppState>()(
         prefersReducedMotion: false,
       },
       setVoiceEnabledDefault: (enabled) =>
-        set({
-          settings: { ...(get().settings || {}), voiceEnabledDefault: enabled },
-        }),
-      setPrefersReducedMotion: (reduced) =>
-        set({
+        set((state) => ({
           settings: {
-            ...(get().settings || {}),
+            ...(state.settings || {
+              voiceEnabledDefault: true,
+              prefersReducedMotion: false,
+            }),
+            voiceEnabledDefault: enabled,
+          },
+        })),
+      setPrefersReducedMotion: (reduced) =>
+        set((state) => ({
+          settings: {
+            ...(state.settings || {
+              voiceEnabledDefault: true,
+              prefersReducedMotion: false,
+            }),
             prefersReducedMotion: reduced,
           },
-        }),
+        })),
 
       // Job Actions
       setSelectedJob: (jobId) => set({ selectedJobId: jobId }),
@@ -131,6 +156,26 @@ export const useAppStore = create<AppState>()(
           jobs: state.jobs.map((job) =>
             job.id === jobId ? { ...job, rubric } : job,
           ),
+          rubrics: state.rubrics.map((r) =>
+            r.jobId === jobId ? { ...r, criteria: rubric } : r,
+          ),
+        })),
+
+      updateRubric: (rubricId, payload) =>
+        set((state) => ({
+          rubrics: state.rubrics.map((r) =>
+            r.id === rubricId ? { ...r, ...payload } : r,
+          ),
+          jobs: state.jobs.map((j) => {
+            const match = state.rubrics.find(
+              (r) => r.id === rubricId && r.jobId === j.id,
+            );
+            if (!match) return j;
+            return {
+              ...j,
+              rubric: payload.criteria || j.rubric,
+            };
+          }),
         })),
 
       // Candidate Actions
