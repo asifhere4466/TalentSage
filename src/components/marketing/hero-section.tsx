@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -27,12 +27,21 @@ export function HeroSection() {
   return (
     <section
       ref={ref}
-      className="relative overflow-hidden bg-gradient-to-b from-background via-background to-secondary/30 pt-8 pb-20 lg:pt-16 lg:pb-32"
+      className="relative overflow-hidden bg-gradient-to-b from-background via-background/50 to-background"
     >
-      {/* Background decorations */}
+      {/* Animated background decorations */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] rounded-full bg-accent/5 blur-3xl" />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-1/3 -right-1/4 w-[900px] h-[900px] rounded-full bg-gradient-to-br from-primary/15 to-secondary/8 blur-3xl opacity-60"
+        />
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          className="absolute -bottom-1/3 -left-1/4 w-[700px] h-[700px] rounded-full bg-gradient-to-tr from-accent/10 to-primary/8 blur-3xl opacity-60"
+        />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-secondary/5 blur-3xl opacity-40" />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -44,22 +53,29 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/15 to-secondary/15 border border-primary/20 text-primary text-sm font-medium mb-6 group hover:border-primary/40 transition-colors"
             >
-              <Sparkles className="h-4 w-4" />
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <Sparkles className="h-4 w-4" />
+              </motion.div>
               <span>AI-Native Recruitment Platform</span>
             </motion.div>
 
-            {/* Headline */}
+            {/* Headline with gradient */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground text-balance"
+              className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-balance leading-tight"
             >
-              Hire smarter.
+              <span className="text-foreground">Hire smarter.</span>
               <br />
-              <span className="text-primary">Hire faster.</span>
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Hire faster.
+              </span>
             </motion.h1>
 
             {/* Subheadline */}
@@ -67,28 +83,31 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 text-pretty"
+              className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 text-pretty leading-relaxed"
             >
               TalentSage is the AI-native recruitment operating system that
               reduces time-to-hire by 60% with intelligent candidate matching
               and automated workflows.
             </motion.p>
 
-            {/* Benefits list */}
+            {/* Benefits list with stagger */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+              className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start flex-wrap"
             >
               {benefits.map((benefit, index) => (
-                <div
+                <motion.div
                   key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
                   className="flex items-center gap-2 text-sm text-muted-foreground"
                 >
                   <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
                   <span>{benefit}</span>
-                </div>
+                </motion.div>
               ))}
             </motion.div>
 
@@ -99,16 +118,25 @@ export function HeroSection() {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <Button size="lg" className="text-base px-8" asChild>
-                <Link href="/dashboard">
+              <Button
+                size="lg"
+                className="text-base px-8 bg-gradient-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 group"
+                asChild
+              >
+                <Link href="/dashboard" className="flex items-center">
                   Start Free Trial
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <motion.div
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </motion.div>
                 </Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="text-base px-8 bg-transparent"
+                className="text-base px-8 border-primary/20 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
               >
                 <Play className="mr-2 h-4 w-4" />
                 Watch Demo
@@ -120,51 +148,115 @@ export function HeroSection() {
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="mt-12 pt-8 border-t border-border"
+              className="mt-12 pt-8 border-t border-primary/10"
             >
               <p className="text-sm text-muted-foreground mb-4">
                 Trusted by leading companies worldwide
               </p>
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8 opacity-60">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8">
                 {["TechCorp", "InnovateCo", "FutureHR", "ScaleUp Inc"].map(
-                  (company) => (
-                    <span
+                  (company, i) => (
+                    <motion.span
                       key={company}
-                      className="text-lg font-semibold text-muted-foreground"
+                      initial={{ opacity: 0 }}
+                      animate={isInView ? { opacity: 1 } : {}}
+                      transition={{ duration: 0.4, delay: 0.6 + i * 0.1 }}
+                      className="text-sm font-semibold text-muted-foreground opacity-70 hover:opacity-100 transition-opacity"
                     >
                       {company}
-                    </span>
+                    </motion.span>
                   ),
                 )}
               </div>
             </motion.div>
           </div>
 
-          {/* Right column - Visual */}
+          {/* Right column - Visual with animations */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.2 }}
             className="relative"
           >
             {/* Main dashboard preview */}
-            <div className="relative rounded-2xl bg-card border border-border shadow-2xl overflow-hidden">
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="relative rounded-2xl bg-gradient-to-br from-card via-card to-secondary/5 border-2 border-primary/25 shadow-2xl shadow-primary/30 overflow-hidden group hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/40 transition-all duration-500"
+            >
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
               {/* Header bar */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-secondary/50">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-destructive/50" />
-                  <div className="w-3 h-3 rounded-full bg-warning/50" />
-                  <div className="w-3 h-3 rounded-full bg-success/50" />
-                </div>
-                <div className="flex-1 flex justify-center">
-                  <div className="px-4 py-1 rounded-md bg-muted text-xs text-muted-foreground">
-                    dashboard.talentsage.ai
-                  </div>
+
+              <div className="flex-1 flex justify-center">
+                <div className="px-4 py-1 rounded-md bg-gradient-to-r from-muted to-muted/50 text-xs text-muted-foreground font-mono font-semibold border border-border/50">
+                  TalentSage AI Dashboard
                 </div>
               </div>
 
+              {/* Inline notifications (inside dashboard card) */}
+              <div className="absolute left-6 top-1 right-6 flex items-start justify-between pointer-events-none z-30">
+                <motion.div
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.45, delay: 0.9 }}
+                  whileHover={{ scale: 1.04 }}
+                  className="hidden lg:flex pointer-events-auto items-start gap-3 p-3 rounded-xl bg-gradient-to-br from-success/12 to-success/5 border border-success/30 shadow-md shadow-success/15 w-44"
+                  aria-label="AI Match Found notification"
+                >
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-success/30 to-success/20 flex items-center justify-center flex-shrink-0 border border-success/50 shadow-sm shadow-success/20">
+                    <CheckCircle2 className="h-4 w-4 text-success" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">
+                      AI Match Found
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      <span className="font-medium text-success">
+                        95% match
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        - Sarah Chen
+                      </span>
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 8 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.45, delay: 0.95 }}
+                  whileHover={{ scale: 1.04 }}
+                  className="hidden lg:flex pointer-events-auto items-start gap-3 p-3 rounded-xl bg-gradient-to-br from-primary/12 to-accent/6 border border-primary/30 shadow-md shadow-primary/15 w-44"
+                  aria-label="Interview scheduled notification"
+                >
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center flex-shrink-0 border border-primary/50 shadow-sm shadow-primary/20">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    >
+                      <Sparkles className="h-4 w-4 text-primary" />
+                    </motion.div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">
+                      Interview Scheduled
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      <span className="font-medium text-primary">
+                        Tomorrow, 2:00 PM
+                      </span>{" "}
+                      <span className="text-muted-foreground">
+                        - Emily Watson
+                      </span>
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
+
               {/* Dashboard content mock */}
-              <div className="p-6 bg-gradient-to-br from-background to-secondary/20">
+              <div className="pt-16 px-6 pb-6 bg-gradient-to-br from-background/90 via-background/80 to-secondary/5 relative z-10">
                 {/* Stats row */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   {[
@@ -192,7 +284,8 @@ export function HeroSection() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={isInView ? { opacity: 1, y: 0 } : {}}
                       transition={{ duration: 0.4, delay: 0.5 + i * 0.1 }}
-                      className="p-4 rounded-xl bg-card border border-border"
+                      whileHover={{ scale: 1.05 }}
+                      className="p-4 rounded-xl bg-gradient-to-br from-card to-secondary/20 border border-primary/10 hover:border-primary/30 transition-colors"
                     >
                       <stat.icon className={`h-5 w-5 ${stat.color} mb-2`} />
                       <p className="text-2xl font-bold text-foreground">
@@ -232,9 +325,10 @@ export function HeroSection() {
                       initial={{ opacity: 0, x: 20 }}
                       animate={isInView ? { opacity: 1, x: 0 } : {}}
                       transition={{ duration: 0.4, delay: 0.7 + i * 0.1 }}
-                      className="flex items-center gap-4 p-3 rounded-lg bg-card border border-border"
+                      whileHover={{ scale: 1.02, x: 5 }}
+                      className="flex items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-card to-secondary/10 border border-primary/10 hover:border-primary/30 transition-colors cursor-pointer"
                     >
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-secondary/20 flex items-center justify-center text-primary font-semibold text-sm">
                         {candidate.name
                           .split(" ")
                           .map((n) => n[0])
@@ -249,7 +343,7 @@ export function HeroSection() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-primary">
+                        <p className="text-sm font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                           {candidate.score}%
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -258,49 +352,6 @@ export function HeroSection() {
                       </div>
                     </motion.div>
                   ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Floating elements */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: 1 }}
-              className="absolute -left-6 top-1/4 p-4 rounded-xl bg-card border border-border shadow-lg"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
-                  <CheckCircle2 className="h-5 w-5 text-success" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    AI Match Found
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    95% compatibility
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: 1.1 }}
-              className="absolute -right-4 bottom-1/4 p-4 rounded-xl bg-card border border-border shadow-lg"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Interview Scheduled
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Tomorrow, 2:00 PM
-                  </p>
                 </div>
               </div>
             </motion.div>

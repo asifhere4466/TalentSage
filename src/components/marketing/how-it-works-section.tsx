@@ -1,54 +1,62 @@
-'use client';
+"use client";
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Upload, Sparkles, Users, CheckCircle } from 'lucide-react';
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Upload, Sparkles, Users, CheckCircle } from "lucide-react";
 
 const steps = [
   {
-    number: '01',
+    number: "01",
     icon: Upload,
-    title: 'Post Your Job',
+    title: "Post Your Job",
     description:
-      'Create a job posting in minutes. Our AI helps you write compelling descriptions and suggests optimal requirements.',
+      "Create a job posting in minutes. Our AI helps you write compelling descriptions and suggests optimal requirements.",
+    color: "from-primary to-primary/70",
   },
   {
-    number: '02',
+    number: "02",
     icon: Sparkles,
-    title: 'AI Screens Candidates',
+    title: "AI Screens Candidates",
     description:
-      'TalentSage automatically parses resumes, evaluates candidates against your criteria, and ranks them by fit.',
+      "TalentSage automatically parses resumes, evaluates candidates against your criteria, and ranks them by fit.",
+    color: "from-secondary to-secondary/70",
   },
   {
-    number: '03',
+    number: "03",
     icon: Users,
-    title: 'Review Top Matches',
+    title: "Review Top Matches",
     description:
-      'See AI-generated insights, scores, and recommendations. Focus your time on the best-fit candidates.',
+      "See AI-generated insights, scores, and recommendations. Focus your time on the best-fit candidates.",
+    color: "from-accent to-accent/70",
   },
   {
-    number: '04',
+    number: "04",
     icon: CheckCircle,
-    title: 'Hire with Confidence',
+    title: "Hire with Confidence",
     description:
-      'Schedule interviews, collect feedback, and make data-driven hiring decisions all in one place.',
+      "Schedule interviews, collect feedback, and make data-driven hiring decisions all in one place.",
+    color: "from-success to-success/70",
   },
 ];
 
 export function HowItWorksSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="how-it-works" ref={ref} className="py-20 lg:py-32 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id="how-it-works"
+      ref={ref}
+      className="py-16 lg:py-24 bg-background relative overflow-hidden"
+    >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Section header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-14">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
-            className="inline-block text-sm font-medium text-primary mb-4"
+            className="inline-block text-sm font-semibold text-primary mb-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20"
           >
             HOW IT WORKS
           </motion.span>
@@ -64,61 +72,50 @@ export function HowItWorksSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-4 text-lg text-muted-foreground text-pretty"
+            className="mt-3 text-base sm:text-lg text-muted-foreground"
           >
-            TalentSage streamlines your entire recruitment workflow with AI-powered 
-            automation at every step.
+            TalentSage streamlines your entire recruitment workflow with
+            AI-powered automation at every step.
           </motion.p>
         </div>
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Connecting line */}
-          <div className="absolute left-8 lg:left-1/2 top-0 bottom-0 w-px bg-border lg:-translate-x-1/2 hidden sm:block" />
+        {/* Steps Grid - 4 Column Layout */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          {steps.map((step, index) => (
+            <motion.div
+              key={step.number}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.1 + 0.08 * index }}
+              whileHover={{ y: -4 }}
+              className="group relative"
+            >
+              {/* Step Card */}
+              <div className="h-full p-6 rounded-2xl bg-gradient-to-br from-card to-secondary/5 border border-primary/10 hover:border-primary/30 transition-all duration-300">
+                {/* Icon and Number */}
+                <div className="flex items-start gap-3 mb-4">
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-lg shadow-primary/20`}
+                  >
+                    <step.icon className="h-6 w-6 text-white" />
+                  </motion.div>
+                  <span className="text-3xl font-bold text-primary/30">
+                    {step.number}
+                  </span>
+                </div>
 
-          {/* Steps */}
-          <div className="space-y-12 lg:space-y-0">
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-                className={`relative grid lg:grid-cols-2 gap-8 lg:gap-16 ${
-                  index % 2 === 1 ? 'lg:text-right' : ''
-                }`}
-              >
                 {/* Content */}
-                <div
-                  className={`pl-20 sm:pl-24 lg:pl-0 ${
-                    index % 2 === 1 ? 'lg:order-2 lg:pl-16' : 'lg:pr-16'
-                  }`}
-                >
-                  <span className="text-6xl font-bold text-primary/20">{step.number}</span>
-                  <h3 className="text-2xl font-semibold text-foreground mt-2 mb-3">
-                    {step.title}
-                  </h3>
-                  <p className="text-muted-foreground text-lg leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-
-                {/* Icon */}
-                <div
-                  className={`absolute left-0 lg:left-1/2 lg:-translate-x-1/2 sm:relative ${
-                    index % 2 === 1 ? 'lg:order-1' : ''
-                  }`}
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg sm:mx-auto">
-                    <step.icon className="h-7 w-7 text-white" />
-                  </div>
-                </div>
-
-                {/* Spacer for alternating layout on desktop */}
-                <div className="hidden lg:block" />
-              </motion.div>
-            ))}
-          </div>
+                <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                  {step.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
